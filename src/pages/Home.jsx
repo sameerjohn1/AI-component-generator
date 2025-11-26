@@ -73,7 +73,7 @@ const Home = () => {
       <Navbar />
 
       <div className="flex items-center px-[100px] justify-between gap-[30px]">
-        <div className="left w-[50%] h-[80vh] bg-[#141319] mt-5 p-[20px]">
+        <div className="left w-[50%] h-[auto] py-[30px] rounded-xl bg-[#141319] mt-5 p-[20px]">
           <h3 className="text-[25px] font-semibold sp-text">
             AI component generator
           </h3>
@@ -89,17 +89,24 @@ const Home = () => {
             className="w-full min-h-[200px] p-[10px] rounded-xl bg-[#09090B] mt-3"
             placeholder="Describe your component in detail and let ai will code for your component"
           ></textarea>
-          <div
-            className="generate flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600
-           mt-3 ml-auto w-28 text-center gap-1 transition-all hover:opacity-[.8] cursor-pointer"
-          >
-            <i>
-              <BsStars />
-            </i>
-            Generate
+          <div className="flex items-center justify-between">
+            <p className="text-[gray]">
+              Click to generate button to generate your code
+            </p>
+            <button
+              className="generate flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600
+           mt-3  w-28 text-center gap-1 transition-all hover:opacity-[.8] cursor-pointer"
+            >
+              <i>
+                <BsStars />
+              </i>
+              Generate
+            </button>
           </div>
         </div>
-        <div className="right w-[50%] h-[80vh] bg-[#141319] mt-5 "></div>
+        <div className="right w-[50%] h-[80vh] bg-[#141319] mt-5 rounded-xl ">
+          <div></div>
+        </div>
       </div>
     </div>
   );
