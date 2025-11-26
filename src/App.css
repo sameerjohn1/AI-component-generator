@@ -1,0 +1,50 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background-color: var(--primary-bg);
+  color: #fff;
+}
+
+html{
+  overflow-x: hidden;
+}
+
+:root{
+  --primary-bg:#09090B;
+  --secondary-bg:#141319;
+  --tertiary-bg:#17171C;  
+}
+
+/* :root{
+  --primary-color:#fff;
+  --secondary-color:#000;
+  --accent-color:#ff0080;
+  --background-color:#000;
+  --text-color:#fff;
+  --border-radius:10px;
+  --transition:all 0.3s ease-in-out;
+} */
+
+
+.sp-text{
+  background: conic-gradient(at top,#c084fc,#a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.icon{
+  padding: 15px;
+  font-size: 20px;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  background-color: var(--secondary-bg);
+  cursor: pointer;
+}
