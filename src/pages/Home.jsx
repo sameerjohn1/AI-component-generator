@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./components/Navbar";
 import Select from "react-select";
 import { BsStars } from "react-icons/bs";
+import { HiOutlineCode } from "react-icons/hi";
 
 const customStyles = {
   control: (provided) => ({
@@ -95,7 +96,7 @@ const Home = () => {
             </p>
             <button
               className="generate flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600
-           mt-3  w-28 text-center gap-1 transition-all hover:opacity-[.8] cursor-pointer"
+                mt-3  w-28 text-center gap-1 transition-all hover:opacity-[.8] cursor-pointer"
             >
               <i>
                 <BsStars />
@@ -104,8 +105,13 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div className="right w-[50%] h-[80vh] bg-[#141319] mt-5 rounded-xl ">
-          <div></div>
+        <div className="right mt-2 w-[50%] h-[80vh] bg-[#141319] mt-5 rounded-xl ">
+          <div className="skeleton w-full h-full flex items-center flex-col justify-center">
+            <div className="circle p-[20px] w-[70px] flex items-center justify-center text-[30px] h-[70px] rounded-[50%] bg-gradient-to-r from-purple-400 to-purple-600">
+              <HiOutlineCode />
+            </div>
+            <p className="text-[16px] text-[gray] mt-3" >Your component and code will appear here.</p>
+          </div>
         </div>
       </div>
     </div>
