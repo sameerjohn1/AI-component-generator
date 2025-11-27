@@ -8,6 +8,9 @@ import { IoCopy } from "react-icons/io5";
 import { PiExportBold } from "react-icons/pi";
 import { ImNewTab } from "react-icons/im";
 import { FiRefreshCcw } from "react-icons/fi";
+import { GoogleGenAI } from "@google/genai";
+import { BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const customStyles = {
   control: (provided) => ({
@@ -67,9 +70,6 @@ const customStyles = {
 };
 
 const Home = () => {
-  const [outputScreen, setOutputScreen] = useState(true);
-  const [tab, setTab] = useState(1);
-
   const options = [
     { value: "html-css", label: "HTML + CSS" },
     { value: "html-tailwind", label: "HTML + Tailwind" },
@@ -77,6 +77,71 @@ const Home = () => {
     { value: "html-css-js", label: "HTML + CSS + JS" },
     { value: "html-tailwind-bootstrap", label: "HTML + Tailwind +Bootstrap" },
   ];
+
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const [outputScreen, setOutputScreen] = useState(false);
+  const [tab, setTab] = useState(1);
+  const [prompt, setPrompt] = useState("");
+  const [frameWork, setFrameWork] = useState(options[0]);
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // The client gets the API key from the environment variable `GEMINI_API_KEY`.
+  const ai = new GoogleGenAI({ apiKey });
+
+  async function getResponse() {
+    setLoading(true);
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `
+      You are an experienced programmer with expertise in web development and UI/UX design. You create modern, animated, and fully responsive UI components. You are highly skilled in HTML, CSS, Tailwind CSS, Bootstrap, JavaScript, React, Next.js, Vue.js, Angular, and more.      
+      
+      Now, generate a UI  component for: ${prompt}
+      Framework to use: ${frameWork}
+
+      Requirements:
+      - The code must be clean, well-structured, and easy to understand.
+      - Optimize for SEO where applicable.
+      - Focus on creating a modern, animated, and responsive UI design.
+      - Include high-quality hover effects, shadows, animations, colors, and typography.
+      - Return ONLY the code, formatted properly in **Markdown fenced code blocks**.
+      - Do NOT include explanations, text, comments, or anything else besides the code. 
+      - And give the whole code in a single HTML file.
+      `,
+    });
+    console.log(response.text);
+    setCode(extractCode(response.text));
+    setOutputScreen(true);
+    setLoading(false);
+  }
+
+  function extractCode(response) {
+    const match = response.match(/```(?:\w+)?\n?([\s\S]+?)```/);
+    return match ? match[1].trim() : response.trim();
+  }
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success("Code copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      toast.error("Failed to copy code.");
+    }
+  };
+
+  const downloadFile = () => {
+    const fileName = "GenUI-Code.html";
+    const blob = new Blob([code], { type: "text/plain" });
+    let url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("file downloaded");
+  };
+
   return (
     <div>
       <Navbar />
@@ -90,11 +155,18 @@ const Home = () => {
             Describe your component and let AI will code for you.
           </p>
           <p className="text-[15px] fonr-[700] mt-4">FrameWork</p>
-          <Select className="mt-2" options={options} styles={customStyles} />
+          <Select
+            className="mt-2"
+            options={options}
+            styles={customStyles}
+            onChange={(e) => setFrameWork(e.value)}
+          />
           <p className="text-[gray] mt-5 text-[16px]">
             Describe your component
           </p>
           <textarea
+            onChange={(e) => setPrompt(e.target.value)}
+            value={prompt}
             className="w-full min-h-[200px] p-[10px] rounded-xl bg-[#09090B] mt-3"
             placeholder="Describe your component in detail and let ai will code for your component"
           ></textarea>
@@ -103,17 +175,27 @@ const Home = () => {
               Click to generate button to generate your code
             </p>
             <button
+              onClick={getResponse}
               className="generate flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600
                 mt-3  w-28 text-center gap-1 transition-all hover:opacity-[.8] cursor-pointer"
             >
-              <i>
+            
+              {loading === true ? (
+                <>
+                  <BeatLoader className="text-[30px]" />
+                </>
+              ) : (
+                <>
+                  <i>
                 <BsStars />
               </i>
               Generate
+                </>
+              )}
             </button>
           </div>
         </div>
-        <div className="right mt-2 w-[50%] h-[80vh] bg-[#141319] mt-5 rounded-xl ">
+        <div className="right relative mt-2 w-[50%] h-[80vh] bg-[#141319] mt-5 rounded-xl ">
           {outputScreen === false ? (
             <>
               <div className="skeleton w-full h-full flex items-center flex-col justify-center">
@@ -154,12 +236,14 @@ const Home = () => {
                   {tab === 1 ? (
                     <>
                       <button
+                        onClick={copyCode}
                         className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center
                   justify-center transition-all hover:bg-[#333]"
                       >
                         <IoCopy />
                       </button>
                       <button
+                        onClick={downloadFile}
                         className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center
                   justify-center transition-all hover:bg-[#333]"
                       >
@@ -189,15 +273,17 @@ const Home = () => {
                 {tab === 1 ? (
                   <>
                     <Editor
+                      value={code}
                       height="100%"
                       theme="vs-dark"
                       language="html"
-                      value=""
                     />
                   </>
                 ) : (
                   <>
-                    <div className="preview w-full h-full bg-white text-black flex items-center justify-center"></div>
+                    <iframe srcDoc={code} className="preview w-full h-full bg-white text-black flex items-center justify-center">
+
+                    </iframe>
                   </>
                 )}
               </div>
