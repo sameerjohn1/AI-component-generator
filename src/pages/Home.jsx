@@ -11,56 +11,63 @@ import { FiRefreshCcw } from "react-icons/fi";
 import { GoogleGenAI } from "@google/genai";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { useTheme } from "../theme/ThemeContext.js";
 
-const customStyles = {
+const customStyles = (theme) => ({
   control: (provided) => ({
     ...provided,
-    backgroundColor: "#111",
-    borderColor: "#444",
-    color: "#fff",
+    backgroundColor: theme === "dark" ? "#111" : "#f0f0f0",
+    borderColor: theme === "dark" ? "#444" : "#ccc",
+    color: theme === "dark" ? "#fff" : "#000",
     padding: "2px",
     boxShadow: "none",
     "&:hover": {
-      borderColor: "#888",
+      borderColor: theme === "dark" ? "#888" : "#888",
     },
   }),
   menu: (provided) => ({
     ...provided,
-    backgroundColor: "#111",
-    border: "1px solid #444",
+    backgroundColor: theme === "dark" ? "#111" : "#fff",
+    border: theme === "dark" ? "1px solid #444" : "1px solid #ccc",
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isFocused ? "#222" : "#111",
-    color: "#fff",
+    backgroundColor: state.isFocused
+      ? theme === "dark"
+        ? "#222"
+        : "#eee"
+      : theme === "dark"
+      ? "#111"
+      : "#fff",
+    color: theme === "dark" ? "#fff" : "#000",
     cursor: "pointer",
     "&:active": {
-      backgroundColor: "#333",
+      backgroundColor: theme === "dark" ? "#333" : "#ddd",
     },
   }),
   singleValue: (provided) => ({
     ...provided,
-    color: "#fff",
+    color: theme === "dark" ? "#fff" : "#000",
   }),
   placeholder: (provided) => ({
     ...provided,
-    color: "#888",
+    color: theme === "dark" ? "#888" : "#aaa",
   }),
   input: (provided) => ({
     ...provided,
-    color: "#fff",
+    color: theme === "dark" ? "#fff" : "#000",
   }),
   indicatorSeparator: () => ({
     display: "none",
   }),
   dropdownIndicator: (provided) => ({
     ...provided,
-    color: "#888",
+    color: theme === "dark" ? "#888" : "#555",
     "&:hover": {
-      color: "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
     },
   }),
-};
+});
 
 const Home = () => {
   const options = [
@@ -81,6 +88,8 @@ const Home = () => {
   const [isNewTabOpen, setIsNewTabOpen] = useState(false);
 
   const ai = new GoogleGenAI({ apiKey });
+
+  const { theme } = useTheme();
 
   async function getResponse() {
     if (!prompt.trim()) {
@@ -149,7 +158,11 @@ const Home = () => {
 
       <div className="flex flex-col lg:flex-row items-start px-5 lg:px-[100px] gap-6 mt-5">
         {/* Left Panel */}
-        <div className="w-full lg:w-1/2 bg-[#141319] p-5 rounded-xl">
+        <div
+          className={`w-full lg:w-1/2 p-5 rounded-xl shadow-lg ${
+            theme === "dark" ? "bg-[#141319] text-white" : "bg-white text-black"
+          }`}
+        >
           <h3 className="text-2xl font-semibold sp-text">
             AI Component Generator
           </h3>
@@ -161,16 +174,29 @@ const Home = () => {
           <Select
             className="mt-2"
             options={options}
-            styles={customStyles}
+            styles={customStyles(theme)}
             value={frameWork}
             onChange={(selected) => setFrameWork(selected)}
+            theme={(selectTheme) => ({
+              ...selectTheme,
+              borderRadius: 8,
+              colors: {
+                ...selectTheme.colors,
+                primary: theme === "dark" ? "#6C5CE7" : "#6C5CE7",
+                primary25: theme === "dark" ? "#222" : "#eee",
+              },
+            })}
           />
 
           <p className="text-gray-400 mt-5 text-sm">Describe your component</p>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="w-full min-h-[200px] mt-2 p-3 rounded-xl bg-[#09090B] text-white focus:outline-none"
+            className={`w-full min-h-[200px] mt-2 p-3 rounded-xl focus:outline-none ${
+              theme === "dark"
+                ? "bg-[#09090B] text-white"
+                : "bg-gray-50 text-black"
+            }`}
             placeholder="Describe your component in detail..."
           />
 
@@ -196,7 +222,11 @@ const Home = () => {
         </div>
 
         {/* Right Panel */}
-        <div className="w-full lg:w-1/2 bg-[#141319] rounded-xl h-[80vh] relative">
+        <div
+          className={`w-full lg:w-1/2 rounded-xl h-[80vh] relative shadow-lg ${
+            theme === "dark" ? "bg-[#141319]" : "bg-white text-black"
+          }`}
+        >
           {!outputScreen ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-400">
               <div className="circle p-5 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-400 to-purple-600 text-2xl">
@@ -207,40 +237,61 @@ const Home = () => {
           ) : (
             <>
               {/* Tabs */}
-              <div className="flex bg-[#17171C] h-14 rounded-t-xl overflow-hidden">
+              <div
+                className={`flex h-14 rounded-t-xl overflow-hidden ${
+                  theme === "dark" ? "bg-[#17171C]" : "bg-gray-200"
+                }`}
+              >
                 <button
                   onClick={() => setTab(1)}
-                  className={`w-1/2 text-white font-medium ${
-                    tab === 1 ? "bg-[#333]" : ""
-                  }`}
+                  className={`w-1/2 font-medium py-2 transition-all duration-200 
+  ${
+    tab === 1
+      ? theme === "dark"
+        ? "bg-[#222] text-white" // Active Dark
+        : "bg-black text-white" // Active Light
+      : "text-gray-400 hover:text-black dark:text-gray-400 dark:hover:text-white"
+  }`}
                 >
                   Code
                 </button>
+
                 <button
                   onClick={() => setTab(2)}
-                  className={`w-1/2 text-white font-medium ${
-                    tab === 2 ? "bg-[#333]" : ""
-                  }`}
+                  className={`w-1/2 font-medium py-2 transition-all duration-200
+  ${
+    tab === 2
+      ? theme === "dark"
+        ? "bg-[#222] text-white" // Active Dark
+        : "bg-black text-white" // Active Light
+      : "text-gray-400 hover:text-black dark:text-gray-400 dark:hover:text-white"
+  }`}
                 >
                   Preview
                 </button>
               </div>
 
               {/* Toolbar */}
-              <div className="flex justify-between items-center px-4 py-2 bg-[#17171C] border-b border-[#222]">
+              <div
+                className={`flex justify-between items-center px-4 py-2 border-b ${
+                  theme === "dark"
+                    ? "bg-[#17171C] border-[#222]"
+                    : "bg-gray-100 border-gray-300"
+                }`}
+              >
                 <p className="text-white font-semibold">Editor</p>
                 <div className="flex gap-2">
                   {tab === 1 ? (
                     <>
                       <button
                         onClick={copyCode}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 hover:bg-[#333] transition"
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 transition"
                       >
                         <IoCopy />
                       </button>
                       <button
                         onClick={downloadFile}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 hover:bg-[#333] transition"
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 transition"
                       >
                         <PiExportBold />
                       </button>
@@ -249,11 +300,11 @@ const Home = () => {
                     <>
                       <button
                         onClick={() => setIsNewTabOpen(true)}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 hover:bg-[#333] transition"
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 transition"
                       >
                         <ImNewTab />
                       </button>
-                      <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 hover:bg-[#333] transition">
+                      <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 transition">
                         <FiRefreshCcw />
                       </button>
                     </>
@@ -289,7 +340,7 @@ const Home = () => {
             <p className="font-bold text-black">Preview</p>
             <button
               onClick={() => setIsNewTabOpen(false)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 hover:bg-[#333] transition"
+              className="w-10 h-10 flex items-center justify-center rounded-xl border border-zinc-800 transition"
             >
               <IoCloseSharp color="black" />
             </button>
